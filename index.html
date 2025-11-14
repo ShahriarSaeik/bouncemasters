@@ -17,6 +17,15 @@
     <link rel="stylesheet" type="text/css" href="style/index.css"/>
 
     <script src="https://www.youtube.com/game_api/v1"></script>
+    <!-- Namespace shim (replaces removed Google Sign-In functionality) -->
+    <script>
+    (function(){
+        // Provide namespace functions without Google authentication
+        window.__USER_PROGRESS_NAMESPACE__ = '';
+        window.__getActiveUserNamespace = function(){ return window.__USER_PROGRESS_NAMESPACE__ || ''; };
+        window.__setActiveUserNamespace = function(ns){ window.__USER_PROGRESS_NAMESPACE__ = ns || ''; };
+    })();
+    </script>
     <!-- Progress persistence shim: mirrors platform storage to localStorage for reliable saves locally -->
     <script src="scripts/progress_persist.js"></script>
 <script src="game.js"></script>
