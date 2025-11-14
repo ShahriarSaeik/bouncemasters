@@ -20,10 +20,35 @@
     <!-- Namespace shim (replaces removed Google Sign-In functionality) -->
     <script>
     (function(){
-        // Provide namespace functions without Google authentication
-        window.__USER_PROGRESS_NAMESPACE__ = '';
-        window.__getActiveUserNamespace = function(){ return window.__USER_PROGRESS_NAMESPACE__ || ''; };
-        window.__setActiveUserNamespace = function(ns){ window.__USER_PROGRESS_NAMESPACE__ = ns || ''; };
+        var nsKey = '__user_ns__';
+        
+        function setNamespace(ns){
+            try { 
+                if (window.__LOCAL_PROGRESS_STORAGE__ && window.__LOCAL_PROGRESS_STORAGE__.setItem) {
+                    window.__LOCAL_PROGRESS_STORAGE__.setItem(nsKey, ns || '');
+                } 
+            } catch(_) {}
+            window.__USER_PROGRESS_NAMESPACE__ = ns || '';
+        }
+        
+        function getNamespace(){
+            try { 
+                if (window.__LOCAL_PROGRESS_STORAGE__ && window.__LOCAL_PROGRESS_STORAGE__.getItem) {
+                    var n = window.__LOCAL_PROGRESS_STORAGE__.getItem(nsKey);
+                    if (typeof n === 'string') return n;
+                } 
+            } catch(_) {}
+            return window.__USER_PROGRESS_NAMESPACE__ || '';
+        }
+        
+        // Expose helpers for the persistence shim
+        window.__getActiveUserNamespace = getNamespace;
+        window.__setActiveUserNamespace = setNamespace;
+        
+        // Initialize namespace on DOM ready (matches original google_signin.js behavior)
+        document.addEventListener('DOMContentLoaded', function(){
+            setNamespace(getNamespace());
+        });
     })();
     </script>
     <!-- Progress persistence shim: mirrors platform storage to localStorage for reliable saves locally -->
